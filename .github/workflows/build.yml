@@ -7,11 +7,14 @@ on:
 
 jobs:
   build:
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Show available Xcode version (debug)
+        run: xcodebuild -version
 
       - name: Install XcodeGen
         run: brew install xcodegen

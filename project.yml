@@ -1,6 +1,10 @@
 name: USBAccelTest
 options:
   bundleIdPrefix: com.raretree
+packages:
+  SwiftProtobuf:
+    url: https://github.com/apple/swift-protobuf.git
+    from: 1.28.0
 targets:
   USBAccelTest:
     type: application
@@ -16,3 +20,5 @@ targets:
         CODE_SIGN_STYLE: Manual
         CODE_SIGNING_REQUIRED: NO
         CODE_SIGNING_ALLOWED: NO
+    dependencies:
+      - package: SwiftProtobuf

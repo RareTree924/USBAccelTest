@@ -2,13 +2,23 @@ syntax = "proto3";
 
 package usbaccel;
 
+enum ComputeUnit {
+  CPU = 0;
+  GPU = 1;
+  ANE = 2;
+}
+
 message TaskRequest {
-  string op = 1;
-  repeated float input_floats = 2;
+  string task_id = 1;
+  string op = 2;
+  ComputeUnit compute_unit = 3;
+  repeated float input_floats = 4;
 }
 
 message TaskResponse {
-  bool success = 1;
-  string error_message = 2;
-  repeated float output_floats = 3;
+  string task_id = 1;
+  bool success = 2;
+  string error_message = 3;
+  repeated float output_floats = 4;
+  ComputeUnit compute_unit_used = 5;
 }

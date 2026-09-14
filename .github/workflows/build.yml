@@ -1,1 +1,52 @@
-.github/workflows/build.yml
+name: Build iOS App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Show available Xcode version (debug)
+        run: xcodebuild -version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Install Protobuf tools
+        run: brew install protobuf swift-protobuf
+
+      - name: Generate Swift code from task.proto
+        run: protoc --swift_out=USBAccelTest USBAccelTest/task.proto
+
+      - name: Generate the Xcode project from project.yml
+        run: xcodegen generate
+
+      - name: Build unsigned .app
+        run: |
+          xcodebuild -project USBAccelTest.xcodeproj \
+                      -scheme USBAccelTest \
+                      -configuration Debug \
+                      -sdk iphoneos \
+                      -derivedDataPath build \
+                      CODE_SIGNING_ALLOWED=NO \
+                      CODE_SIGNING_REQUIRED=NO \
+                      build
+
+      - name: Package as an (unsigned) IPA
+        run: |
+          mkdir -p Payload
+          cp -r build/Build/Products/Debug-iphoneos/USBAccelTest.app Payload/
+          zip -r USBAccelTest.ipa Payload
+
+      - name: Upload IPA as a downloadable artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: USBAccelTest-ipa
+          path: USBAccelTest.ipa

@@ -8,11 +8,43 @@ enum ComputeUnit {
   ANE = 2;
 }
 
+enum Op {
+  UNKNOWN_OP = 0;
+  ADD = 1;              // a + b, elementwise
+  SUBTRACT = 2;          // a - b, elementwise
+  MULTIPLY = 3;          // a * b, elementwise
+  DIVIDE = 4;            // a / b, elementwise
+  SCALE = 5;             // a * scalar
+  OFFSET = 6;            // a + scalar
+  DOT_PRODUCT = 7;       // sum(a * b) -> single value
+  SUM = 8;               // sum(a) -> single value
+  MEAN = 9;              // average(a) -> single value
+  MIN = 10;              // min(a) -> single value
+  MAX = 11;              // max(a) -> single value
+  ABS = 12;              // |a|, elementwise
+  SQRT = 13;             // sqrt(a), elementwise
+  SQUARE = 14;           // a^2, elementwise
+  RECIPROCAL = 15;       // 1/a, elementwise
+  NEGATE = 16;           // -a, elementwise
+  CLIP = 17;             // clamp a between scalar (min) and scalar_b (max)
+  SORT_ASCENDING = 18;   // sort a ascending
+  SORT_DESCENDING = 19;  // sort a descending
+  REVERSE = 20;          // reverse order of a
+  NORMALIZE = 21;        // (a - mean) / stddev
+  CUMULATIVE_SUM = 22;   // running total of a
+  MATRIX_MULTIPLY = 23;  // a (rows x cols) * b (cols x rows2) -> uses rows/cols fields
+}
+
 message TaskRequest {
   string task_id = 1;
-  string op = 2;
+  Op op = 2;
   ComputeUnit compute_unit = 3;
-  repeated float input_floats = 4;
+  repeated float input_a = 4;
+  repeated float input_b = 5;   // only used by binary ops (ADD, DOT_PRODUCT, etc)
+  float scalar = 6;             // used by SCALE, OFFSET, CLIP (min)
+  float scalar_b = 7;           // used by CLIP (max)
+  int32 rows = 8;               // used by MATRIX_MULTIPLY
+  int32 cols = 9;                // used by MATRIX_MULTIPLY
 }
 
 message TaskResponse {

@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package usbaccel;
+
+message TaskRequest {
+  string op = 1;
+  repeated float input_floats = 2;
+}
+
+message TaskResponse {
+  bool success = 1;
+  string error_message = 2;
+  repeated float output_floats = 3;
+}
